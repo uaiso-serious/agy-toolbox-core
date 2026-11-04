@@ -1,3 +1,26 @@
+```mermaid
+flowchart TD
+    L1["<b>1. scm-runtime (Base SCM)</b><br/>Git + tod/glab/gh + Clone/Branch + /tmp/issue/*.md"]
+
+    L2A["<b>2a. agy-runtime</b><br/>Antigravity + Telemetria Langfuse"]
+    L2B["<b>2b. claude-runtime</b><br/>Claude Code + Telemetria Langfuse"]
+    L2C["<b>2c. opencode-runtime</b><br/>OpenCode + Telemetria Langfuse"]
+
+    L3A["<b>3a. agy-toolbox-core</b><br/>CLI Arsenal + MCPs + Rules/Skills AGY<br/>⬅ <b>você está aqui</b>"]
+    L3B["<b>3b. claude-toolbox-core</b><br/>CLI Arsenal + MCPs + CLAUDE.md/Hooks"]
+    L3C["<b>3c. opencode-toolbox-core</b><br/>CLI Arsenal + MCPs específicos"]
+
+    L1 --> L2A
+    L1 --> L2B
+    L1 --> L2C
+
+    L2A --> L3A
+    L2B --> L3B
+    L2C --> L3C
+
+    style L3A fill:#90EE90,stroke:#008000,stroke-width:3px,color:#000
+```
+
 # agy-toolbox-core
 
 Camada 3 da família `*-runtime` / `*-toolbox`: estende `agy-runtime` (camada 2) sobre `scm-runtime` (camada 1), adicionando o arsenal de ferramentas CLI via `mise` (`30-toolbox.toml`), utilitários de sistema (`apt`) e suporte a Docker-in-Docker rootless (`DIND=1`).
