@@ -88,3 +88,6 @@ Notas:
 > **Segurança:** `--privileged` dá ao container acesso quase total ao host, e o
 > `agy` roda com `--dangerously-skip-permissions`. Use só em ambiente confiável.
 > Alternativa sem `--privileged`: `--runtime=sysbox-runc` (requer Sysbox no host).
+
+.
+
