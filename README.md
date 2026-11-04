@@ -89,5 +89,98 @@ Notas:
 > `agy` roda com `--dangerously-skip-permissions`. Use só em ambiente confiável.
 > Alternativa sem `--privileged`: `--runtime=sysbox-runc` (requer Sysbox no host).
 
-.
+---
+
+## Exemplo de arquivo `.env` completo
+
+> No `--env-file` do Docker, não use aspas nem `export` (o valor é lido literalmente) e mantenha comentários apenas em linhas próprias.
+
+```dotenv
+# ==============================================================================
+# Camada 1: Repositório Git e Issue (scm-runtime)
+# ==============================================================================
+
+# Tipo da forja: onedev, gitlab ou github (obrigatório)
+GIT_SERVER_TYPE=onedev
+
+# URL HTTP/HTTPS do repositório a ser clonado em /workspace (obrigatório)
+GIT_REPO_URL=http://onedev.example.com/org/repo.git
+
+# Token de acesso pessoal (PAT / Access Token) da forja (obrigatório; fica só em memória)
+GIT_TOKEN=seu_token_aqui
+
+# (Opcional) Usuário enviado pelo credential helper HTTP (padrão: git)
+GIT_USERNAME=git
+
+# Branch base clonada inicialmente do remoto (obrigatório)
+GIT_BASE_BRANCH=main
+
+# Branch de trabalho (obrigatória se ISSUE_ID não estiver definido; criada a partir de GIT_BASE_BRANCH se não existir)
+GIT_BRANCH=agent/minha-tarefa
+
+# Identidade Git configurada no container para os commits (obrigatório)
+GIT_USER_NAME=MyAgent
+GIT_USER_EMAIL=myagent@example.com
+
+# (Opcional) Co-autor humano adicionado automaticamente via hook prepare-commit-msg (formato: "Nome <email>")
+GIT_CO_AUTHOR=Some human <somehuman@example.com>
+
+# (Opcional) ID da issue a ser baixada para /tmp/issue/*.md (sobrescreve GIT_BRANCH para issue/<ISSUE_ID>)
+#ISSUE_ID=123
+
+# (Opcional) Modo autônomo: se true, executa sem interação humana, captura stdout e comenta na issue (exige ISSUE_ID)
+#AUTONOMOUS_MODE=true
+
+# (Opcional) Limite máximo de caracteres do stdout enviado como comentário na issue no modo autônomo (padrão: 60000)
+#MAX_COMMENT_CHARS=60000
+
+# (Opcional) Overrides de host/token para GitLab ou GitHub Enterprise (derivados de GIT_REPO_URL e GIT_TOKEN se omitidos)
+#GITLAB_HOST=https://gitlab.example.com
+#GITLAB_TOKEN=seu_token_gitlab
+#GH_HOST=github.example.com
+#GH_TOKEN=seu_token_github
+#GH_ENTERPRISE_TOKEN=seu_token_ghe
+
+# ==============================================================================
+# Camada 2: Google Antigravity CLI (agy-runtime)
+# ==============================================================================
+
+# (Opcional) Prompt inicial enviado ao agy (-p no modo autônomo; -i no modo interativo; padrão autônomo com ISSUE_ID: "Resolva a issue #<ID>.")
+#ISSUE_PROMPT=Resolva a issue
+
+# (Opcional) Se true, inclui os comentários da issue (/tmp/issue/comments.md) nas rules do agente
+#ISSUE_COMMENTS=true
+
+# (Opcional) Modelo utilizado pelo Antigravity CLI (`agy --model`, consulte `agy models`)
+#MODEL=gemini-4-argon-medium
+
+# ==============================================================================
+# Camada 2: Telemetria Langfuse (plugin langfuse-observability)
+# ==============================================================================
+
+# (Opcional) URL base e chaves do projeto no Langfuse (se omitidas, nenhum trace é enviado)
+LANGFUSE_BASE_URL=http://langfuse.example.com
+LANGFUSE_PUBLIC_KEY=pk-lf-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+LANGFUSE_SECRET_KEY=sk-lf-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# (Opcional) Identificador do usuário no trace (fallback automático: e-mail de GIT_CO_AUTHOR -> GIT_USER_EMAIL)
+#LANGFUSE_USER_ID=some-user
+
+# (Opcional) Tags extras no trace do Langfuse separadas por vírgula (padrão: mode:interactive ou mode:autonomous)
+#AGY_LANGFUSE_TRACE_TAGS=mode:interactive,env:dev
+
+# ==============================================================================
+# Camada 3: Docker e Docker-in-Docker (agy-toolbox-core)
+# ==============================================================================
+
+# (Opcional) Daemon Docker externo quando DIND não está ativo (ex.: socket montado ou TCP)
+#DOCKER_HOST=unix:///var/run/docker.sock
+
+# (Opcional) Se 1, inicia o dockerd rootless interno via start-dockerd.sh (requer --privileged ou equivalente)
+#DIND=1
+
+# (Opcional) Driver de storage do dockerd interno quando DIND=1 (padrão: overlay2; alternativas: fuse-overlayfs, vfs)
+#DOCKERD_STORAGE_DRIVER=overlay2
+```
+
 
